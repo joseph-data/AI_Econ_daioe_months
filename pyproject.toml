@@ -5,7 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "path>=17.1.1",
+    "pandas>=3.0.0",
     "pathlib>=1.0.1",
     "polars>=1.38.1",
+    "pyscbwrapper>=0.1.2",
 ]
