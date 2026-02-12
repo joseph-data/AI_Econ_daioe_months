@@ -71,28 +71,28 @@ jobs:
         with:
           name: ssyk12-output
       - name: Commit and push
-      run: |
-        set -euo pipefail
-
-        mkdir -p data
-
-        found_path="$(find . -maxdepth 5 -type f -name 'scb_months.parquet' -print -quit)"
-        if [ -z "${found_path}" ]; then
-          echo "Missing combined file in artifact: data/scb_months.parquet"
-          exit 1
-        fi
-        if [ "${found_path}" != "./data/scb_months.parquet" ]; then
-          mv "${found_path}" data/scb_months.parquet.parquet
-        fi
-
-        git config user.name "joseph-data"
-        git config user.email "oluochjoseph00@gmail.com"
-        git add data/scb_months.parquet
-
-        if git diff --cached --quiet; then
-          echo "No changes to commit."
-          exit 0
-        fi
-
-        git commit -m "Update scb_months.parquet"
-        git push origin "${TARGET_BRANCH}"
+        run: |
+          set -euo pipefail
+  
+          mkdir -p data
+  
+          found_path="$(find . -maxdepth 5 -type f -name 'scb_months.parquet' -print -quit)"
+          if [ -z "${found_path}" ]; then
+            echo "Missing combined file in artifact: data/scb_months.parquet"
+            exit 1
+          fi
+          if [ "${found_path}" != "./data/scb_months.parquet" ]; then
+            mv "${found_path}" data/scb_months.parquet.parquet
+          fi
+  
+          git config user.name "joseph-data"
+          git config user.email "oluochjoseph00@gmail.com"
+          git add data/scb_months.parquet
+  
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+  
+          git commit -m "Update scb_months.parquet"
+          git push origin "${TARGET_BRANCH}"
