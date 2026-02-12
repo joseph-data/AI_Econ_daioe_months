@@ -83,9 +83,11 @@ jobs:
             echo "Missing combined file in artifact: data/scb_months.parquet"
             exit 1
           fi
-          if [ "${found_path}" != "./data/scb_months.parquet" ]; then 
-          mv "${found_path}" data/scb_months.parquet fi
+          
+          if [ "${found_path}" != "./data/scb_months.parquet" ]; then
+            mv "${found_path}" data/scb_months.parquet
           fi
+
   
           git config user.name "joseph-data"
           git config user.email "oluochjoseph00@gmail.com"
