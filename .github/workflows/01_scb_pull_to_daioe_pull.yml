@@ -84,7 +84,7 @@ jobs:
             exit 1
           fi
           if [ "${found_path}" != "./data/scb_months.parquet" ]; then
-            mv "${found_path}" data/scb_months.parquet.parquet
+            mv "${found_path}" data/scb_months.parquet
           fi
   
           git config user.name "joseph-data"
