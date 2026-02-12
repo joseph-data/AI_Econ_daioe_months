@@ -71,30 +71,28 @@ jobs:
         with:
           name: ssyk12-output
       - name: Commit and push
-        run: |
-          set -euo pipefail
+      run: |
+        set -euo pipefail
 
-          mkdir -p data/
+        mkdir -p data
 
-          if [ ! -f "data/scb_months.parquet" ]; then
-            echo "Missing combined file in artifact: data/scb_months.parquet"
-            exit 1
-          fi
+        found_path="$(find . -maxdepth 5 -type f -name 'scb_months.parquet' -print -quit)"
+        if [ -z "${found_path}" ]; then
+          echo "Missing combined file in artifact: data/scb_months.parquet"
+          exit 1
+        fi
+        if [ "${found_path}" != "./data/scb_months.parquet" ]; then
+          mv "${found_path}" data/scb_months.parquet.parquet
+        fi
 
-          git config user.name "joseph-data"
-          git config user.email "oluochjoseph00@gmail.com"
+        git config user.name "joseph-data"
+        git config user.email "oluochjoseph00@gmail.com"
+        git add data/scb_months.parquet
 
-          git add data/scb_months.parquet
+        if git diff --cached --quiet; then
+          echo "No changes to commit."
+          exit 0
+        fi
 
-          # Only add logs if they exist (safe under -e)
-          if [ -d "logs" ]; then
-            git add logs/
-          fi
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-
-          git commit -m "Update ssyk12 Level 1 data"
-          git push origin "${TARGET_BRANCH}"
+        git commit -m "Update scb_months.parquet"
+        git push origin "${TARGET_BRANCH}"
