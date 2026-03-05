@@ -1,3 +1,6 @@
+import polars as pl
+
+
 def inspect_lazy(lf: pl.LazyFrame) -> None:
     """
     Print the shape of a Polars LazyFrame in a memory-efficient manner.
