@@ -14,12 +14,14 @@ def find_key(variables: dict, needle: str) -> str:
     for key in variables:
         if needle in key.lower():
             return key
-    raise KeyError(f"Could not find key containing '{needle}' in SCB variables.")
+    msg = f"Could not find key containing '{needle}' in SCB variables."
+    raise KeyError(msg)
 
 
 def build_dataframe(tab_id: str = DEFAULT_TABLE_ID) -> pl.DataFrame:
     if tab_id not in TABLES:
-        raise ValueError(f"Unknown table id '{tab_id}'. Valid ids: {list(TABLES)}")
+        msg = f"Unknown table id '{tab_id}'. Valid ids: {list(TABLES)}"
+        raise ValueError(msg)
 
     scb = SCB(*TABLES[tab_id])
     variables = scb.get_variables()
@@ -40,7 +42,7 @@ def build_dataframe(tab_id: str = DEFAULT_TABLE_ID) -> pl.DataFrame:
             months_key: months,
             observations_key: observations,
             sex_key: sex,
-        }
+        },
     )
 
     scb_fetch = scb.get_data()["data"]
@@ -48,8 +50,8 @@ def build_dataframe(tab_id: str = DEFAULT_TABLE_ID) -> pl.DataFrame:
     query = scb.get_query()["query"]
     occupation_codes = query[0]["selection"]["values"]
     sex_codes = query[3]["selection"]["values"]
-    occ_dict = dict(zip(occupation_codes, occupations))
-    sex_dict = dict(zip(sex_codes, sex))
+    occ_dict = dict(zip(occupation_codes, occupations, strict=True))
+    sex_dict = dict(zip(sex_codes, sex, strict=True))
 
     df = (
         pl.DataFrame(scb_fetch)
@@ -59,14 +61,14 @@ def build_dataframe(tab_id: str = DEFAULT_TABLE_ID) -> pl.DataFrame:
                 pl.col("key").list.get(1).alias("sex"),
                 pl.col("key").list.get(2).alias("month"),
                 pl.col("values").list.get(0).alias("value"),
-            ]
+            ],
         )
         .drop(["key", "values"])
         .with_columns(
             [
                 pl.col("code_1").replace(occ_dict).alias("occupation"),
                 pl.col("sex").replace(sex_dict).alias("sex"),
-            ]
+            ],
         )
         .filter(~pl.col("code_1").is_in(EXCLUDED_OCCUPATION_CODES))
         .with_columns(
@@ -76,14 +78,14 @@ def build_dataframe(tab_id: str = DEFAULT_TABLE_ID) -> pl.DataFrame:
                 pl.col("sex").cast(pl.Utf8),
                 pl.col("month").cast(pl.Utf8),
                 pl.col("value").cast(pl.Float64, strict=False),
-            ]
+            ],
         )
         .with_columns(
             pl.col("month")
             .str.replace("M", "-")
             .str.strptime(pl.Date, "%Y-%m")
             .dt.strftime("%Y-%b")
-            .alias("month")
+            .alias("month"),
         )
     )
 

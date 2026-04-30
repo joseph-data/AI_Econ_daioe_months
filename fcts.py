@@ -21,6 +21,7 @@ def inspect_lazy(lf: pl.LazyFrame) -> None:
     - The column count is obtained from the schema metadata and
       does not require data materialization.
     - Intended for debugging and validation of large lazy pipelines.
+
     """
     n_rows = lf.select(pl.len()).collect().item()
     n_cols = len(lf.collect_schema())
